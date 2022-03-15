@@ -184,7 +184,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       if (_openedCouple.length == 1) {
         _changeBoxAnim(gameBoxModel, GameBoxAnimStatus.waitingToMatch,
             waitingToMatchAnimDuration, true);
-      } else if (_openedCouple.length == 2) {
+      } else if (_openedCouple.length == 2 &&
+          _openedCouple[1].animController.isCompleted &&
+          _openedCouple[1].animStatus == GameBoxAnimStatus.flip) {
         setState(() {
           _moveCount++;
         });
