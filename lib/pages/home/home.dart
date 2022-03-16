@@ -50,7 +50,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   late final Timer _timer;
 
-  int _elapsedTime = 0;
+  final ValueNotifier<int> _elapsedTime = ValueNotifier<int>(0);
+
   int _score = 0;
   int _moveCount = 0;
   int _hintCount = initialHintCount;
@@ -484,7 +485,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _openedCouple.clear();
       _score = 0;
       _moveCount = 0;
-      _elapsedTime = 0;
+      _elapsedTime.value = 0;
       _hintCount = initialHintCount;
     });
   }
@@ -500,7 +501,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         MaterialPageRoute(
             builder: (context) => ResultsPage(
                 score: _score,
-                totalSeconds: _elapsedTime,
+                totalSeconds: _elapsedTime.value,
                 moveCount: _moveCount)));
     _resetGame();
   }
@@ -534,9 +535,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _initGameBoxModels();
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _elapsedTime++;
-      });
+      _elapsedTime.value++;
     });
 
     super.initState();
@@ -586,7 +585,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Passing Time: ${timeFormat(_elapsedTime)}'),
+                  ValueListenableBuilder(
+                      valueListenable: _elapsedTime,
+                      builder:
+                          (BuildContext context, int value, Widget? child) {
+                        return Text('Passing Time: ${timeFormat(value)}');
+                      }),
                   const SizedBox(height: 10),
                   Text('Moves: $_moveCount'),
                   if (_hintCount > 0) const SizedBox(height: 10),
